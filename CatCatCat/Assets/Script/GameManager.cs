@@ -18,7 +18,10 @@ public class GameManager : MonoBehaviour
     private int[] visited_tiles = new int[30];
     private int[] visited_final_tiles = new int[30]; // 육각형 위치에 따른 현재 캔디 존재 상태
     public GameObject[] Candy_Obj = new GameObject[7];
+    public GameObject[] Heart_Obj = new GameObject[3];
     public AudioSource cat_bgm;
+    public AudioSource button_bgm;
+    public GameObject UI_manager;
     private char[] Candy_Obj_name = { 'g', 'b', 'y', 'r', 'p', 'o', 't' };
     List<List<int>> near_tiles = new List<List<int>>(); // 각 타일의 주변 타일 저장
     private int cutline = 6;
@@ -26,7 +29,6 @@ public class GameManager : MonoBehaviour
     private int click_2_candy_num = 0;
     private bool Check_destory = false;
     public Text score_text;
-    public Text wrong_move_num_text;
     int score_num = 0;
     int wrong_move_num = 3;
     bool finish_check = true;
@@ -670,6 +672,8 @@ public class GameManager : MonoBehaviour
             // 다시 위치 원위치
             yield return StartCoroutine(ChangeCandy(click_2_candy_num, click_1_candy_num));
             wrong_move_num -= 1;
+            Heart_Obj[wrong_move_num].SetActive(false);
+            button_bgm.Play();
             finish_check = true;
         }
     }
@@ -756,9 +760,10 @@ public class GameManager : MonoBehaviour
         }
         if(wrong_move_num == 0)
         {
-
+            finish_check = false;
+            UI_manager.GetComponent<UI_manager>().score = score_num;
+            UI_manager.GetComponent<UI_manager>().OnresultImage();
         }
-        wrong_move_num_text.text = wrong_move_num.ToString();
         score_text.text = score_num.ToString();
     }
 }
