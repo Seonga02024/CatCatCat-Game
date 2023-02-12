@@ -43,19 +43,19 @@ public class UI_manager : MonoBehaviour
     public void OnresultImage()
     {
         resultnum.text = score.ToString();
-        if(score > 1000)
+        if(score > 30000)
         {
             resultment.text = "상위 10%";
         }
-        else if(score > 700)
+        else if(score > 21000)
         {
             resultment.text = "상위 30%";
         }
-        else if (score > 500)
+        else if (score > 15000)
         {
             resultment.text = "상위 50%";
         }
-        else if (score > 300)
+        else if (score > 9000)
         {
             resultment.text = "상위 70%";
         }

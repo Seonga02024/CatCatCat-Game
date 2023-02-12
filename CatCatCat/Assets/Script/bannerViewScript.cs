@@ -13,9 +13,9 @@ public class bannerViewScript : MonoBehaviour
     public void Start() //±§∞Ì √ ±‚»≠
     {
 #if UNITY_ANDROID
-        adUnitId = "ca-app-pub-3940256099942544~3347511713";
+        adUnitId = "ca-app-pub-4727835752295775~4001216343";
 #elif UNITY_IOS
-        adUnitId = "ca-app-pub-3940256099942544~3347511713";
+        adUnitId = "ca-app-pub-4727835752295775~4001216343";
 #else
         adUnitId = "unexpected_platform";
 #endif
