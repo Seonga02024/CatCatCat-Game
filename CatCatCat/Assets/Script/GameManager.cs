@@ -304,7 +304,7 @@ public class GameManager : MonoBehaviour
             }
             
             new_candy = CheckGrounpMap(); // map check
-            finish_check = true;
+            //finish_check = true;
             Debug.Log("finish");
         }
     }
@@ -665,6 +665,7 @@ public class GameManager : MonoBehaviour
             // 캔디 없애고 없어진 공간 저장
             // 없어진 공간 채우기 + 확인
             yield return StartCoroutine(FillCandy());
+            finish_check = true;
         }
         else
         {
@@ -765,5 +766,16 @@ public class GameManager : MonoBehaviour
             UI_manager.GetComponent<UI_manager>().OnresultImage();
         }
         score_text.text = score_num.ToString();
+        int check_last = 0;
+        for (int i = 0; i < 30; i++)
+        {
+            if (visited_final_tiles[i] == 1)
+            {
+                check_last = 1;
+                finish_check = false;
+            }
+        }
+        if (check_last == 0)
+            finish_check = true;
     }
 }
