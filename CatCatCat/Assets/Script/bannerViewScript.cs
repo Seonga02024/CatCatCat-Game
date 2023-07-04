@@ -10,12 +10,12 @@ public class bannerViewScript : MonoBehaviour
     private BannerView bannerView;
 
 
-    public void Start() //���� �ʱ�ȭ
+    public void Start() //±¤°í ÃÊ±âÈ­
     {
 #if UNITY_ANDROID
-        adUnitId = "ca-app-pub-4727835752295775~4001216343";
+        adUnitId = "key"; // 보완상 삭제
 #elif UNITY_IOS
-        adUnitId = "ca-app-pub-4727835752295775~4001216343";
+        adUnitId = "key";
 #else
         adUnitId = "unexpected_platform";
 #endif
