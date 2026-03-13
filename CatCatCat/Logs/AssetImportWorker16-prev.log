@@ -1,0 +1,286 @@
+Using pre-set license
+Built from '6000.0/respin/6000.0.58f2-44b8bf3a32' branch; Version is '6000.0.58f2 (92dee566b325) revision 9625317'; Using compiler version '193933523'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'ko' Physical Memory: 65222 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-03-13T05:59:23Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker16
+-projectPath
+C:/Users/robocare/Documents/GitHub/CatCatCat-Game/CatCatCat
+-logFile
+Logs/AssetImportWorker16.log
+-srvPort
+61737
+-job-worker-count
+13
+-background-job-worker-count
+8
+-gc-helper-count
+1
+-name
+AssetImport
+Successfully changed project path to: C:/Users/robocare/Documents/GitHub/CatCatCat-Game/CatCatCat
+C:/Users/robocare/Documents/GitHub/CatCatCat-Game/CatCatCat
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [222664]  Target information:
+
+Player connection [222664]  * "[IP] 192.168.113.135 [Port] 0 [Flags] 2 [Guid] 493051564 [EditorId] 493051564 [Version] 1048832 [Id] WindowsEditor(7,SAPAKPC) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [222664] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [222664] Host joined alternative multi-casting on [225.0.0.222:34997]...
+JobSystem: Creating JobQueue using job-worker-count value 13
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 126.81 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.0.58f2 (92dee566b325)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.0.58f2-x86_64/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/robocare/Documents/GitHub/CatCatCat-Game/CatCatCat/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 (ID=0x2882)
+    Vendor:   NVIDIA
+    VRAM:     7957 MB
+    Driver:   32.0.15.8195
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.0.58f2-x86_64/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.0.58f2-x86_64/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.0.58f2-x86_64/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56852
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.0.58f2-x86_64/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.0.58f2-x86_64/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.026517 seconds.
+- Loaded All Assemblies, in  0.789 seconds
+Native extension for Android target not found
+Unable to list connected devices. 
+* daemon not running; starting now at tcp:5037
+could not read ok from ADB Server
+* failed to start daemon
+adb.exe: failed to check server version: cannot connect to daemon
+
+UnityEditor.Android.CommandInvokationFailure: Unable to list connected devices. 
+C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe devices -l
+
+Environment Variables:
+PROCESSOR_LEVEL = 6
+USERDOMAIN = SAPAKPC
+ProgramFiles = C:\Program Files
+TMP = C:\Users\robocare\AppData\Local\Temp
+PROCESSOR_ARCHITECTURE = AMD64
+EFC_184224_1592913036 = 1
+PROCESSOR_REVISION = b701
+OS = Windows_NT
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_69204_XQXBYHVOUUHPGFEK
+PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 183 Stepping 1, GenuineIntel
+ProgramW6432 = C:\Program Files
+EFC_184224_3789132940 = 1
+USERPROFILE = C:\Users\robocare
+JAVA_HOME = C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK
+CommonProgramFiles = C:\Program Files\Common Files
+DriverData = C:\Windows\System32\Drivers\DriverData
+ComSpec = C:\Windows\system32\cmd.exe
+PSModulePath = C:\Program Files\WindowsPowerShell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules
+ANDROID_NDK_ROOT = C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\NDK
+SystemRoot = C:\Windows
+IGCCSVC_DB = AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA0I1TNG1V2UCPT5i2ViGVvwQAAAACAAAAAAAQZgAAAAEAACAAAADbRS2wHSxm3sCW6k3+/cHwm2uVHZeIeoO5+JBRbseR4QAAAAAOgAAAAAIAACAAAABSerVPhmVrpQKdqkyModNFJXlNVtc94VINcYIoWB09/mAAAAAl8x1RUmfLqAFyPStYZXTb+7K6WNBlJQ9R+DUW7MYd1eBFcApTWux8D8gsLcMmtgLke2eSYApR4B6To0bz0R7I8bIFCeT+Ul3DU4iK5n02OMiqtGpjQLS2RmLx7zd6E01AAAAAj9c76mVKpnQlE9sGARNAprOwjXOOi+0h5oCr7AB6zm47Pa0A7sUmTyDWbNuuZGEM4nlWMwDvUdBN/j9uOZI6bg==
+NUMBER_OF_PROCESSORS = 28
+EFC_184224_2283032206 = 1
+FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
+TEMP = C:\Users\robocare\AppData\Local\Temp
+Path = C:\Program Files\Eclipse Adoptium\jdk-17.0.16.8-hotspot\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Iqpad\ubCENTRA\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\dotnet\;C:\Program Files\Bandizip\;C:\Users\robocare\AppData\Local\Android\Sdk\platform-tools;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Program Files\Eclipse Adoptium\jdk-17.0.16.8-hotspot\\bin;C:\Users\robocare\AppData\Local\Programs\Python\Launcher\;C:\Users\robocare\AppData\Local\Microsoft\WindowsApps;C:\Users\robocare\AppData\Local\GitHubDesktop\bin;C:\Users\robocare\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\MongoDB\Server\8.0\bin;C:\Users\robocare\.dotnet\tools;C:\Users\robocare\AppData\Local\Programs\Python\Python313\Scripts;C:\ffmpeg-2025-06-28-git-cfd1f81e7d-full_build\ffmpeg-2025-06-28-git-cfd1f81e7d-full_build\bin;C:\Users\robocare\AppData\Roaming\npm;C:\Users\robocare\AppData\Local\Programs\Python\Python311\Scripts;C:\Users\robocare\AppData\Local\Programs\cursor\resources\app\bin
+USERNAME = sapak
+COMPUTERNAME = SAPAKPC
+PATHEXT = .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+ALLUSERSPROFILE = C:\ProgramData
+SystemDrive = C:
+windir = C:\Windows
+FPS_BROWSER_USER_PROFILE_STRING = Default
+EFC_184224_1262719628 = 1
+ZES_ENABLE_SYSMAN = 1
+PUBLIC = C:\Users\Public
+CommonProgramFiles(x86) = C:\Program Files (x86)\Common Files
+APPDATA = C:\Users\robocare\AppData\Roaming
+OneDrive = C:\Users\robocare\OneDrive
+MOZ_PLUGIN_PATH = C:\Program Files (x86)\Foxit Software\Foxit PDF Reader\plugins\
+CommonProgramW6432 = C:\Program Files\Common Files
+ProgramFiles(x86) = C:\Program Files (x86)
+SESSIONNAME = Console
+EFC_184224_344590478 = 1
+LOGONSERVER = \\SAPAKPC
+LOCALAPPDATA = C:\Users\robocare\AppData\Local
+EFC_184224_2775293581 = 1
+HOMEPATH = \Users\robocare
+HOMEDRIVE = C:
+USERDOMAIN_ROAMINGPROFILE = SAPAKPC
+ProgramData = C:\ProgramData
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+
+
+stderr[
+* daemon not running; starting now at tcp:5037
+could not read ok from ADB Server
+* failed to start daemon
+adb.exe: failed to check server version: cannot connect to daemon
+]
+stdout[
+
+]
+exit code: 1
+  at UnityEditor.Android.Command.WaitForProgramToRun (UnityEditor.Utils.Program p, UnityEditor.Android.Command+WaitingForProcessToExit waitingForProcessToExit, System.String errorMsg) [0x00099] in /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/Android/Command.cs:221 
+  at UnityEditor.Android.Command.Run (System.Diagnostics.ProcessStartInfo psi, UnityEditor.Android.Command+WaitingForProcessToExit waitingForProcessToExit, System.String errorMsg) [0x00017] in /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/Android/Command.cs:159 
+  at UnityEditor.Android.Command.Run (System.String command, System.String args, System.String workingdir, UnityEditor.Android.Command+WaitingForProcessToExit waitingForProcessToExit, System.String errorMsg, System.Text.Encoding inputEncoding) [0x0000c] in /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/Android/Command.cs:117 
+  at UnityEditor.Android.ADB.RunInternal (System.String[] command, UnityEditor.Android.Command+WaitingForProcessToExit waitingForProcessToExit, System.String errorMsg) [0x00008] in /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/Android/ADB.cs:223 
+  at UnityEditor.Android.ADB.Run (System.String[] command, UnityEditor.Android.Command+WaitingForProcessToExit waitingForProcessToExit, System.String errorMsg) [0x00013] in /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/Android/ADB.cs:216 
+  at UnityEditor.Android.AndroidDeploymentTargetsExtension.GetKnownTargets (UnityEditor.DeploymentTargets.IDeploymentTargetsMainThreadContext context, UnityEditor.ProgressHandler progressHandler) [0x00110] in /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/DeploymentTargets/AndroidDeploymentTargetsExtension.cs:316 
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+UnityEditor.Android.AndroidDeploymentTargetsExtension:GetKnownTargets (UnityEditor.DeploymentTargets.IDeploymentTargetsMainThreadContext,UnityEditor.ProgressHandler) (at /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/DeploymentTargets/AndroidDeploymentTargetsExtension.cs:420)
+UnityEditor.Android.TargetScanWorker:ScanSync () (at /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/TargetScanWorker.cs:164)
+UnityEditor.Android.TargetExtension:OnUsbDevicesChanged (UnityEditor.Hardware.UsbDevice[]) (at /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/ExtensionModule.cs:106)
+UnityEditor.Android.TargetExtension:OnLoad () (at /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/ExtensionModule.cs:67)
+UnityEditor.Modules.ModuleManager:InitializePlatformSupportModules ()
+
+(Filename: /home/bokken/build/output/unity/unity/PlatformDependent/AndroidPlayer/Editor/Managed/DeploymentTargets/AndroidDeploymentTargetsExtension.cs Line: 420)
+
+Android Extension - Scanning For ADB Devices 6276 ms
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  6.636 seconds
+Domain Reload Profiling: 7395ms
+	BeginReloadAssembly (344ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (47ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (140ms)
+	LoadAllAssembliesAndSetupDomain (217ms)
+		LoadAssemblies (293ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (213ms)
+			TypeCache.Refresh (211ms)
+				TypeCache.ScanAssembly (194ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (6636ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (6602ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (6403ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (46ms)
+			ProcessInitializeOnLoadAttributes (100ms)
+			ProcessInitializeOnLoadMethodAttributes (49ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Import Worker Mode flag is 0x00
+Begin MonoManager ReloadAssembly
+Symbol file LoadedFromMemory is not a mono symbol file
+- Loaded All Assemblies, in  1.665 seconds
+Refreshing native plugins compatible for Editor in 14.73 ms, found 3 plugins.
+Native extension for Android target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.764 seconds
+Domain Reload Profiling: 2396ms
+	BeginReloadAssembly (230ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (5ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (27ms)
+	RebuildCommonClasses (38ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (92ms)
+	LoadAllAssembliesAndSetupDomain (1261ms)
+		LoadAssemblies (1122ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (288ms)
+			TypeCache.Refresh (254ms)
+				TypeCache.ScanAssembly (226ms)
+			BuildScriptInfoCaches (30ms)
+			ResolveRequiredComponents (2ms)
+	FinalizeReload (764ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (656ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (16ms)
+			SetLoadedEditorAssemblies (4ms)
+			BeforeProcessingInitializeOnLoad (283ms)
+			ProcessInitializeOnLoadAttributes (266ms)
+			ProcessInitializeOnLoadMethodAttributes (56ms)
+			AfterProcessingInitializeOnLoad (32ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (10ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.09 seconds
+Refreshing native plugins compatible for Editor in 11.63 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3079 unused Assets / (1.0 MB). Loaded Objects now: 3574.
+Memory consumption went from 83.1 MB to 82.1 MB.
+Total: 5.192100 ms (FindLiveObjects: 0.283000 ms CreateObjectMapping: 0.116300 ms MarkObjects: 4.087400 ms  DeleteObjects: 0.704300 ms)
+

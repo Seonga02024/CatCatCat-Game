@@ -1,0 +1,5 @@
+# ninja log v5
+284	734	7950849633283316	C:/Users/robocare/Documents/GitHub/CatCatCat-Game/CatCatCat/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/636g2213/obj/arm64-v8a/libswappywrapper.so	2dc71f9c30bdbb
+3	280	7950849628831171	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	eac788c218714e6e
+10	294	7950855352529252	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	eac788c218714e6e
+295	774	7950855357271973	C:/Users/robocare/Documents/GitHub/CatCatCat-Game/CatCatCat/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/636g2213/obj/arm64-v8a/libswappywrapper.so	2dc71f9c30bdbb

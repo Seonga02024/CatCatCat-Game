@@ -1,0 +1,248 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 1073741824 bytes for G1 virtual space
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3613), pid=233980, tid=31488
+#
+# JRE version:  (17.0.9+9) (build )
+# Java VM: OpenJDK 64-Bit Server VM (17.0.9+9, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentpath:C:\Program Files\SentinelOne\Sentinel Agent 25.1.3.334\SentinelJava64.dll=extendedCapabilities org.gradle.launcher.GradleMain -Dorg.gradle.jvmargs=-Xmx4096m --stop
+
+Host: Intel(R) Core(TM) i7-14700, 28 cores, 63G,  Windows 11 , 64 bit Build 26100 (10.0.26100.7705)
+Time: Fri Mar 13 15:00:13 2026  Windows 11 , 64 bit Build 26100 (10.0.26100.7705) elapsed time: 23.248579 seconds (0d 0h 0m 23s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000021d8eeb88d0):  JavaThread "Unknown thread" [_thread_in_vm, id=31488, stack(0x0000006499a00000,0x0000006499b00000)]
+
+Stack: [0x0000006499a00000,0x0000006499b00000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x67cf49]
+V  [jvm.dll+0x83478a]
+V  [jvm.dll+0x83624e]
+V  [jvm.dll+0x8368b3]
+V  [jvm.dll+0x247f1f]
+V  [jvm.dll+0x679d69]
+V  [jvm.dll+0x66e6ba]
+V  [jvm.dll+0x307e5b]
+V  [jvm.dll+0x30f306]
+V  [jvm.dll+0x35f0ce]
+V  [jvm.dll+0x35f2ff]
+V  [jvm.dll+0x2dea58]
+V  [jvm.dll+0x2df9c4]
+V  [jvm.dll+0x806031]
+V  [jvm.dll+0x36cf31]
+V  [jvm.dll+0x7e4aac]
+V  [jvm.dll+0x3f07af]
+V  [jvm.dll+0x3f23e1]
+C  [InProcessClient64.dll+0x13677d]
+C  [InProcessClient64.dll+0xd0aa7]
+C  [InProcessClient64.dll+0xd0a19]
+C  [jli.dll+0x528f]
+C  [ucrtbase.dll+0x37b0]
+C  [KERNEL32.DLL+0x2e8d7]
+C  [ntdll.dll+0x8c40c]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ffa8c3dee98, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x0000021d8efabaf0 GCTaskThread "GC Thread#0" [stack: 0x0000006499b00000,0x0000006499c00000] [id=93032]
+  0x0000021d8efbf430 ConcurrentGCThread "G1 Main Marker" [stack: 0x0000006499c00000,0x0000006499d00000] [id=157344]
+  0x0000021d8efbfb00 ConcurrentGCThread "G1 Conc#0" [stack: 0x0000006499d00000,0x0000006499e00000] [id=88352]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffa8bb9f497]
+
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x0000021d8ee94690] Heap_lock - owner thread: 0x0000021d8eeb88d0
+
+Heap address: 0x0000000404800000, size: 16312 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 1.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+<Empty>
+
+Heap:
+ garbage-first heap   total 0K, used 0K [0x0000000404800000, 0x0000000800000000)
+  region size 8192K, 0 young (0K), 0 survivors (0K)
+
+[error occurred during error reporting (printing heap information), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffa8bf86c79]
+
+GC Heap History (0 events):
+No events
+
+Dll operation events (1 events):
+Event: 0.014 Loaded shared library C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\java.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff652b80000 - 0x00007ff652b8e000 	C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\java.exe
+0x0000021d85780000 - 0x0000021d859e8000 	C:\Windows\SYSTEM32\ntd1l.dll
+0x0000021d859f0000 - 0x0000021d85ab9000 	C:\Windows\System32\kern3l32.dll
+0x00007ffb9b740000 - 0x00007ffb9b9a8000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00007ffb9a8c0000 - 0x00007ffb9a989000 	C:\Windows\System32\KERNEL32.DLL
+0x00007ffb981c0000 - 0x00007ffb985b1000 	C:\Windows\System32\KERNELBASE.dll
+0x00007ffb97510000 - 0x00007ffb978eb000 	C:\Program Files\SentinelOne\Sentinel Agent 25.1.3.334\InProcessClient64.dll
+0x00007ffb9aa80000 - 0x00007ffb9ab34000 	C:\Windows\System32\ADVAPI32.dll
+0x00007ffb9b300000 - 0x00007ffb9b3a9000 	C:\Windows\System32\msvcrt.dll
+0x00007ffb9a990000 - 0x00007ffb9aa36000 	C:\Windows\System32\sechost.dll
+0x00007ffb99860000 - 0x00007ffb99978000 	C:\Windows\System32\RPCRT4.dll
+0x00007ffb98960000 - 0x00007ffb98aab000 	C:\Windows\System32\ucrtbase.dll
+0x00007ffb97500000 - 0x00007ffb9750b000 	C:\Windows\SYSTEM32\VERSION.dll
+0x00007ffb91360000 - 0x00007ffb91377000 	C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\jli.dll
+0x00007ffb99980000 - 0x00007ffb99b46000 	C:\Windows\System32\USER32.dll
+0x00007ffb98190000 - 0x00007ffb981b7000 	C:\Windows\System32\win32u.dll
+0x00007ffb996c0000 - 0x00007ffb996eb000 	C:\Windows\System32\GDI32.dll
+0x00007ffb7ca60000 - 0x00007ffb7ccf3000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.7824_none_3e0870b2e3345462\COMCTL32.dll
+0x00007ffb99320000 - 0x00007ffb9944b000 	C:\Windows\System32\gdi32full.dll
+0x00007ffb98730000 - 0x00007ffb987d3000 	C:\Windows\System32\msvcp_win.dll
+0x00007ffb91380000 - 0x00007ffb9139b000 	C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\VCRUNTIME140.dll
+0x00007ffb97480000 - 0x00007ffb9748c000 	C:\Windows\SYSTEM32\FLTLIB.DLL
+0x0000021d85b00000 - 0x0000021d85b31000 	C:\Windows\System32\IMM32.DLL
+0x0000000180000000 - 0x0000000180218000 	C:\Windows\System32\ubUMHS_x64.dll
+0x00007ffb9b3b0000 - 0x00007ffb9b547000 	C:\Windows\System32\ole32.dll
+0x00007ffb99ce0000 - 0x00007ffb9a066000 	C:\Windows\System32\combase.dll
+0x00007ffb9a070000 - 0x00007ffb9a7c2000 	C:\Windows\System32\SHELL32.dll
+0x00007ffb98020000 - 0x00007ffb9818a000 	C:\Windows\System32\wintypes.dll
+0x00007ffb9a7d0000 - 0x00007ffb9a8a7000 	C:\Windows\System32\OLEAUT32.dll
+0x00007ffb9b240000 - 0x00007ffb9b2a7000 	C:\Windows\System32\SHLWAPI.dll
+0x00007ffb98ab0000 - 0x00007ffb99313000 	C:\Windows\System32\Windows.Storage.dll
+0x00007ffb92f90000 - 0x00007ffb9310b000 	C:\Windows\System32\IqpWmk64.dll
+0x00007ffb92ed0000 - 0x00007ffb92f80000 	C:\Windows\SYSTEM32\WINSPOOL.DRV
+0x00007ffb9acb0000 - 0x00007ffb9ada6000 	C:\Windows\System32\shcore.dll
+0x00007ffb97cb0000 - 0x00007ffb97d07000 	C:\Windows\SYSTEM32\cfgmgr32.dll
+0x00007ffb97f40000 - 0x00007ffb97f69000 	C:\Windows\SYSTEM32\profapi.dll
+0x00007ffb81020000 - 0x00007ffb8102c000 	C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\vcruntime140_1.dll
+0x00007ffb02c60000 - 0x00007ffb02ced000 	C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\msvcp140.dll
+0x00007ffa8b8b0000 - 0x00007ffa8c511000 	C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\server\jvm.dll
+0x00007ffb97490000 - 0x00007ffb974ee000 	C:\Windows\SYSTEM32\POWRPROF.dll
+0x00007ffb92c30000 - 0x00007ffb92c3a000 	C:\Windows\SYSTEM32\WSOCK32.dll
+0x0000021d85bc0000 - 0x0000021d85c34000 	C:\Windows\System32\WS2_32.dll
+0x00007ffb8c5b0000 - 0x00007ffb8c5e5000 	C:\Windows\SYSTEM32\WINMM.dll
+0x00007ffb97460000 - 0x00007ffb97474000 	C:\Windows\SYSTEM32\UMPDC.dll
+0x00007ffb96980000 - 0x00007ffb9699b000 	C:\Windows\SYSTEM32\kernel.appcore.dll
+0x00007ffb81000000 - 0x00007ffb8100a000 	C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\jimage.dll
+0x00007ffb95a00000 - 0x00007ffb95c42000 	C:\Windows\SYSTEM32\DBGHELP.DLL
+0x00007ffb7c2d0000 - 0x00007ffb7c30b000 	C:\Windows\SYSTEM32\dbgcore.DLL
+0x00007ffb98680000 - 0x00007ffb98725000 	C:\Windows\System32\bcryptPrimitives.dll
+0x00007ffadc0b0000 - 0x00007ffadc14f000 	C:\Program Files\SentinelOne\Sentinel Agent 25.1.3.334\SentinelJava64.dll
+0x00007ffb809d0000 - 0x00007ffb809f5000 	C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\java.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin;C:\Windows\SYSTEM32;C:\Program Files\SentinelOne\Sentinel Agent 25.1.3.334;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.7824_none_3e0870b2e3345462;C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\server
+
+VM Arguments:
+jvm_args: -agentpath:C:\Program Files\SentinelOne\Sentinel Agent 25.1.3.334\SentinelJava64.dll=extendedCapabilities 
+java_command: org.gradle.launcher.GradleMain -Dorg.gradle.jvmargs=-Xmx4096m --stop
+java_class_path (initial): C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\Tools\gradle\lib\gradle-launcher-8.11.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 12                                        {product} {ergonomic}
+     uint ConcGCThreads                            = 5                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 20                                        {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 8388608                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 1073741824                                {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 17104371712                               {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 8388608                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 7602480                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122027880                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122027880                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 17104371712                            {manageable} {ergonomic}
+     bool UseCompressedClassPointers               = true                           {product lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Unity\Hub\Editor\6000.0.58f2-x86_64\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK
+PATH=C:\Program Files\Eclipse Adoptium\jdk-17.0.16.8-hotspot\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Iqpad\ubCENTRA\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\dotnet\;C:\Program Files\Bandizip\;C:\Users\robocare\AppData\Local\Android\Sdk\platform-tools;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Program Files\Eclipse Adoptium\jdk-17.0.16.8-hotspot\\bin;C:\Users\robocare\AppData\Local\Programs\Python\Launcher\;C:\Users\robocare\AppData\Local\Microsoft\WindowsApps;C:\Users\robocare\AppData\Local\GitHubDesktop\bin;C:\Users\robocare\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\MongoDB\Server\8.0\bin;C:\Users\robocare\.dotnet\tools;C:\Users\robocare\AppData\Local\Programs\Python\Python313\Scripts;C:\ffmpeg-2025-06-28-git-cfd1f81e7d-full_build\ffmpeg-2025-06-28-git-cfd1f81e7d-full_build\bin;C:\Users\robocare\AppData\Roaming\npm;C:\Users\robocare\AppData\Local\Programs\Python\Python311\Scripts;C:\Users\robocare\AppData\Local\Programs\cursor\resources\app\bin
+USERNAME=sapak
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 183 Stepping 1, GenuineIntel
+TMP=C:\Users\robocare\AppData\Local\Temp
+TEMP=C:\Users\robocare\AppData\Local\Temp
+
+
+
+Periodic native trim disabled
+
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 26100 (10.0.26100.7705)
+OS uptime: 3 days 1:16 hours
+Hyper-V role detected
+
+CPU: total 28 (initial active 28) (14 cores per cpu, 2 threads per core) family 6 model 183 stepping 1 microcode 0x133, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, sha, fma, vzeroupper, clflush, clflushopt, clwb, hv
+Processor Information for all 28 processors :
+  Max Mhz: 2100, Current Mhz: 2100, Mhz Limit: 2100
+
+Memory: 4k page, system-wide physical 65222M (22020M free)
+TotalPageFile size 101140M (AvailPageFile size 1112M)
+current process WorkingSet (physical memory assigned to process): 28M, peak: 28M
+current process commit charge ("private bytes"): 205M, peak: 1229M
+
+vm_info: OpenJDK 64-Bit Server VM (17.0.9+9) for windows-amd64 JRE (17.0.9+9), built on Oct 26 2023 14:01:42 by "admin" with MS VC++ 16.10 / 16.11 (VS2019)
+
+END.

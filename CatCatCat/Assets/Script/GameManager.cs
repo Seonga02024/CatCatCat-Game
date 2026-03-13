@@ -1,4 +1,4 @@
-using System.Collections;
+癤퓎sing System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,34 +6,62 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    // Candy prefabs and board slot anchors.
     public GameObject Green_Candy;
     public GameObject Blue_Candy;
     public GameObject Orange_Candy;
     public GameObject Red_Candy;
     public GameObject Purple_Candy;
     public GameObject Yellow_Candy;
-    public GameObject[] tiles = new GameObject[30]; // 육각형 위치
-    public GameObject[] candy_tiles; // 육각형 위치에 따른 캔디 오브젝트 
-    private char[] check_tiles = new char[30]; // 육각형 위치에 따른 값들
+    public GameObject[] tiles = new GameObject[30];
+    public GameObject[] candy_tiles;
+    private char[] check_tiles = new char[30];
     private int[] visited_tiles = new int[30];
-    private int[] visited_final_tiles = new int[30]; // 육각형 위치에 따른 현재 캔디 존재 상태
+    private int[] visited_final_tiles = new int[30];
     public GameObject[] Candy_Obj = new GameObject[7];
     public GameObject[] Heart_Obj = new GameObject[3];
     public AudioSource cat_bgm;
     public AudioSource button_bgm;
     public GameObject UI_manager;
+
+    // Board state:
+    // check_tiles = candy id per slot, visited_tiles = temp flood-fill state,
+    // visited_final_tiles = slots that are currently empty.
     private char[] Candy_Obj_name = { 'g', 'b', 'y', 'r', 'p', 'o', 't' };
-    List<List<int>> near_tiles = new List<List<int>>(); // 각 타일의 주변 타일 저장
+    List<List<int>> near_tiles = new List<List<int>>();
     private int cutline = 6;
     private int click_1_candy_num = 0;
     private int click_2_candy_num = 0;
     private bool Check_destory = false;
     public Text score_text;
+    public Text score_gain_text;
+    public Text combo_text;
     int score_num = 0;
     int wrong_move_num = 3;
     bool finish_check = true;
+    bool isResolvingMove = false;
+    bool isGameOver = false;
+    [SerializeField] private float swapMoveSpeed = 1.2f;
+    [SerializeField] private float fallMoveSpeed = 2.0f;
+    [SerializeField] private float scorePopupDuration = 0.6f;
+    [SerializeField] private float scorePopupRise = 26f;
+    [SerializeField] private float comboPopupDuration = 1.0f;
+    [SerializeField] private Color[] comboTierColors = new Color[]
+    {
+        new Color(0f, 0f, 0f),
+        new Color(1f, 0.62f, 0.12f),
+        new Color(0.2f, 0.85f, 0.25f),
+        new Color(0.75f, 0.35f, 1f),
+        new Color(1f, 0.2f, 0.2f)
+    };
+    private Coroutine scorePopupRoutine;
+    private Coroutine comboPopupRoutine;
+    private Vector3 scorePopupStartPos;
+    private Color scorePopupBaseColor;
+    private Color comboBaseColor = Color.white;
+    private int comboCount = 0;
 
-    // Start is called before the first frame update
+    // Build initial map and cache popup UI defaults.
     void Start()
     {
         Candy_Obj[0] = Green_Candy;
@@ -43,15 +71,155 @@ public class GameManager : MonoBehaviour
         Candy_Obj[4] = Purple_Candy;
         Candy_Obj[5] = Orange_Candy;
         FindNearTiles();
-        CreateFrist(); // 처음 맵 세팅
+        CreateFirst();
+
+        if (score_gain_text != null)
+        {
+            scorePopupStartPos = score_gain_text.rectTransform.localPosition;
+            scorePopupBaseColor = score_gain_text.color;
+            score_gain_text.gameObject.SetActive(false);
+        }
+
+        if (combo_text != null)
+        {
+            comboBaseColor = combo_text.color;
+            combo_text.gameObject.SetActive(false);
+        }
     }
 
-    private void CreateFrist()
+    private void AddScore(int amount)
     {
+        score_num += amount;
+        ShowScoreGainPopup(amount);
+    }
+
+    private void ShowScoreGainPopup(int amount)
+    {
+        if (score_gain_text == null || amount == 0)
+            return;
+
+        if (scorePopupRoutine != null)
+            StopCoroutine(scorePopupRoutine);
+
+        scorePopupRoutine = StartCoroutine(ScoreGainPopupRoutine(amount));
+    }
+
+    private IEnumerator ScoreGainPopupRoutine(int amount)
+    {
+        // Float-up + fade-out popup near total score text.
+        score_gain_text.text = amount > 0 ? $"+{amount}" : amount.ToString();
+        score_gain_text.rectTransform.localPosition = scorePopupStartPos;
+        score_gain_text.color = scorePopupBaseColor;
+        score_gain_text.gameObject.SetActive(true);
+
+        float elapsed = 0f;
+        while (elapsed < scorePopupDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / scorePopupDuration);
+
+            score_gain_text.rectTransform.localPosition = scorePopupStartPos + Vector3.up * (scorePopupRise * t);
+
+            Color c = scorePopupBaseColor;
+            c.a = 1f - t;
+            score_gain_text.color = c;
+
+            yield return null;
+        }
+
+        score_gain_text.rectTransform.localPosition = scorePopupStartPos;
+        score_gain_text.color = scorePopupBaseColor;
+        score_gain_text.gameObject.SetActive(false);
+        scorePopupRoutine = null;
+    }
+
+    private void OnComboSuccess()
+    {
+        // Increase combo on every successful match resolution.
+        comboCount += 1;
+        bool rewardedHeart = false;
+
+        if (comboCount % 10 == 0)
+        {
+            // Reward one life every 10 combo chain.
+            rewardedHeart = RechargeHeart();
+        }
+
+        ShowComboPopup(comboCount, rewardedHeart);
+    }
+
+    private void ResetCombo()
+    {
+        comboCount = 0;
+        if (comboPopupRoutine != null)
+        {
+            StopCoroutine(comboPopupRoutine);
+            comboPopupRoutine = null;
+        }
+
+        if (combo_text != null)
+        {
+            combo_text.gameObject.SetActive(false);
+        }
+    }
+
+    private bool RechargeHeart()
+    {
+        if (wrong_move_num >= Heart_Obj.Length)
+            return false;
+
+        if (Heart_Obj[wrong_move_num] != null)
+            Heart_Obj[wrong_move_num].SetActive(true);
+
+        wrong_move_num += 1;
+        return true;
+    }
+
+    private void ShowComboPopup(int combo, bool rewardedHeart)
+    {
+        if (combo_text == null)
+            return;
+
+        combo_text.text = rewardedHeart ? $"{combo} COMBO! +HEART" : $"{combo} COMBO!";
+        combo_text.color = GetComboTierColor(combo);
+        combo_text.gameObject.SetActive(true);
+
+        if (comboPopupRoutine != null)
+            StopCoroutine(comboPopupRoutine);
+
+        comboPopupRoutine = StartCoroutine(HideComboPopupRoutine());
+    }
+
+    private IEnumerator HideComboPopupRoutine()
+    {
+        yield return new WaitForSeconds(comboPopupDuration);
+        if (combo_text != null)
+        {
+            combo_text.color = comboBaseColor;
+            combo_text.gameObject.SetActive(false);
+        }
+        comboPopupRoutine = null;
+    }
+
+    private Color GetComboTierColor(int combo)
+    {
+        // 0~9: tier 0, 10~19: tier 1, ... capped at last configured color.
+        if (comboTierColors == null || comboTierColors.Length == 0)
+            return comboBaseColor;
+
+        int tier = combo / 10;
+        if (tier <= 0)
+            return comboTierColors[0];
+
+        int colorIndex = Mathf.Min(tier, comboTierColors.Length - 1);
+        return comboTierColors[colorIndex];
+    }
+
+    private void CreateFirst()
+    {
+        // Hardcoded initial board layout.
         candy_tiles = new GameObject[30];
-        string MapSetting = "oyrgpobyrbpopgrggprpygbyogooyb"; // 처음 맵 구성 p b y r g
-        //string MapSetting = "ptbtbbgprbptbbrggprpygbytgtttb"; // 처음 맵 구성
-        //string MapSetting = "ttttptbyrbptpgrggprpygbytgtttb"; // 처음 맵 구성
+        string MapSetting = "oyrgpobyrbpopgrggprpygbyogooyb";
 
         for (int i=0; i<30; i++)
         {
@@ -90,13 +258,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private int CheckGrounpMap()
+    private int CheckGroupMap()
     {
+        // Scan board after cascades. If another match exists, keep resolving.
         int new_candy = 0;
-        // 그룹되는지 다시 맵 확인하기 
         for (int i = 0; i < 30; i++)
         {
-            if (visited_final_tiles[i] == 0) // 채워진 공간 확인
+            if (visited_final_tiles[i] == 0)
             {
                 CheckSameCandy(i);
                 if (Check_destory == true)
@@ -106,7 +274,7 @@ public class GameManager : MonoBehaviour
                     return new_candy;
                 }
             }
-            else // 비어진 공간 확인
+            else
             {
                 new_candy += 1;
             }
@@ -116,6 +284,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator MoveCandy(int current_num, int next_num)
     {
+        // Physically move one candy, then commit board arrays.
         if (candy_tiles[current_num] != null)
         {
             Vector2 pos1 = tiles[current_num].transform.position;
@@ -128,8 +297,9 @@ public class GameManager : MonoBehaviour
 
             while (Vector3.Distance(candy_tiles[current_num].transform.position, pos2) > 0.01f)
             {
-                candy_tiles[current_num].transform.position = Vector3.MoveTowards(candy_tiles[current_num].transform.position, pos2, 0.05f);
-                yield return new WaitForSeconds(0.001f);
+                float step = Mathf.Max(0.01f, fallMoveSpeed) * Time.deltaTime;
+                candy_tiles[current_num].transform.position = Vector3.MoveTowards(candy_tiles[current_num].transform.position, pos2, step);
+                yield return null;
             }
 
             candy_tiles[next_num] = candy_tiles[current_num];
@@ -137,7 +307,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private int FindNearEmptyTilesSmall(int num) // 근처 타일 중에 비어진 타일 찾아서 해당 번호 반환
+    private int FindNearEmptyTilesSmall(int num)
     {
         int small = 100;
         for (int j = 0; j < near_tiles[num].Count; j++)
@@ -155,7 +325,8 @@ public class GameManager : MonoBehaviour
 
     private int candy_up_next_level(int candyNum)
     {
-        if (candyNum == 0 || candyNum == 25) // 일일이 예외 처리 말고 더 효율적으로 수정 필요
+        // Hex-grid vertical index mapping for this board topology.
+        if (candyNum == 0 || candyNum == 25)
         {
             candyNum = candyNum + 4;
         }
@@ -175,7 +346,7 @@ public class GameManager : MonoBehaviour
         return candyNum;
     }
 
-    private void FindNearTop() // 근처 팽이 찾아서 값 조정
+    private void FindNearTop()
     {
         ResetGroup();
         for (int i = 0; i < 30; i++)
@@ -185,23 +356,22 @@ public class GameManager : MonoBehaviour
                 int check = 0;
                 for (int j = 0; j < near_tiles[i].Count; j++)
                 {
-                    if (visited_final_tiles[near_tiles[i][j]] == 1) // 주변에 없어질 캔디가 있으면
+                    if (visited_final_tiles[near_tiles[i][j]] == 1)
                     {
                         check = 1;
                     }
                 }
                 if (check == 1)
                 {
-                    candy_tiles[i].GetComponent<Top_count>().count += 1; // 팽이값 올리고
-                    if (candy_tiles[i].GetComponent<Top_count>().count == 2) // 만약 2면 삭제
+                    candy_tiles[i].GetComponent<Top_count>().count += 1;
+                    if (candy_tiles[i].GetComponent<Top_count>().count == 2)
                     {
-                        score_num += 480;
+                        AddScore(480);
                         visited_tiles[i] = 1;
                     }
                 }
             }
         }
-        // 삭제 팽이 옆 팽이 영향 안 받도록 따로
         for (int i = 0; i < 30; i++)
         {
             if (visited_tiles[i] == 1)
@@ -209,43 +379,40 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void DestoryCandy(List<int> destory_candy) // 캔디 없애기
+    private void DestroyCandy(List<int> destory_candy)
     {
-        //List<int> destory_candy_bgm = new List<int>();
-        //FindNearTop();
+        // Remove all flagged slots, then grant score once per batch.
+        int destroyCount = 0;
         for (int i = 0; i < 30; i++)
         {
             if (visited_final_tiles[i] == 1)
             {
-                score_num += 20;
+                destroyCount += 1;
                 destory_candy.Add(i);
                 Destroy(candy_tiles[i]);
                 candy_tiles[i] = null;
-                //destory_candy_bgm.Add(check_tiles[i]);
                 check_tiles[i] = '0';
             }
         }
-        //destory_candy_bgm = destory_candy_bgm.Distinct().ToList();
-        //PlayBGM(destory_candy_bgm);
+        if (destroyCount > 0)
+            AddScore(destroyCount * 20);
         cat_bgm.Play();
     }
 
     private IEnumerator FillCandy()
     {
-        List<int> destory_candy = new List<int>(); // 삭제된 캔디 작은 -> 큰 순 저장
-        // 캔디 없애고 없어진 공간 저장
-        DestoryCandy(destory_candy);
-
-        // 위에서 캔디 내려오기
+        // Resolve one full cycle: destroy -> fall -> side flow -> spawn -> recheck.
+        List<int> destory_candy = new List<int>();
+        DestroyCandy(destory_candy);
         for (int i = 0; i < destory_candy.Count; i++)
         {
-            int candyNum = destory_candy[i]; // 삭제된 캔디
+            int candyNum = destory_candy[i];
             if (visited_final_tiles[candyNum] == 1)
             {
-                int nextCandyNum = candy_up_next_level(candyNum); // 삭제된 캔디 위 캔디
+                int nextCandyNum = candy_up_next_level(candyNum);
                 while (nextCandyNum < 30)
                 {
-                    if (visited_final_tiles[nextCandyNum] == 0) // 위의 있는 캔디 찾음
+                    if (visited_final_tiles[nextCandyNum] == 0)
                     {
                         yield return StartCoroutine(MoveCandy(nextCandyNum, candyNum));
                         candyNum = candy_up_next_level(candyNum);
@@ -254,15 +421,13 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
-        // 끝 쪽에서 캔디 내려오기
         int[] check_edge = { 20, 23, 24, 26, 27, 28, 29 };
         for (int i = 0; i < 7; i++)
         {
             while (true)
             {
                 int next_tile = FindNearEmptyTilesSmall(check_edge[i]);
-                if (next_tile < check_edge[i]) // 성립이 안될 시 끝까지 내려갔다는 것을 의미
+                if (next_tile < check_edge[i])
                 {
                     yield return StartCoroutine(MoveCandy(check_edge[i], next_tile));
                     check_edge[i] = next_tile;
@@ -274,38 +439,32 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        int new_candy = CheckGrounpMap(); // map check
+        int new_candy = CheckGroupMap();
 
         if (new_candy > 0)
         {
             List<int> new_candies = new List<int>();
-            Debug.Log("생성해야하는 캔디 갯수 : " + new_candy);
 
             for (int i = 0; i < new_candy; i++)
             {
-                // 새로운 캔디 생성
-                int start_candy = 29; // 출발하는 곳
+                int start_candy = 29;
                 int new_candy_num = Random.Range(0, 6);
-                // 새로운 캔디 생성 시, 오브젝트 / 오브젝트 값 / 오브젝트 존재 여부 배열에 값 넣어주기
                 candy_tiles[start_candy] = Instantiate(Candy_Obj[new_candy_num], new Vector3(tiles[start_candy].transform.position.x, tiles[start_candy].transform.position.y), Quaternion.identity) as GameObject;
                 check_tiles[start_candy] = Candy_Obj_name[new_candy_num];
                 visited_final_tiles[start_candy] = 0;
                 new_candies.Add(start_candy);
-                // 캔디 내려오게 하기
                 for (int j = 0; j < (i + 1); j++)
                 {
                     int next_tile = FindNearEmptyTilesSmall(new_candies[j]);
-                    if (next_tile < new_candies[j]) // 성립이 안될 시 끝까지 내려갔다는 것을 의미
+                    if (next_tile < new_candies[j])
                     {
                         yield return StartCoroutine(MoveCandy(new_candies[j], next_tile));
                         new_candies[j] = next_tile;
                     }
                 }
             }
-            
-            new_candy = CheckGrounpMap(); // map check
-            //finish_check = true;
-            Debug.Log("finish");
+
+            new_candy = CheckGroupMap();
         }
     }
 
@@ -318,12 +477,10 @@ public class GameManager : MonoBehaviour
         while (q.Count > 0)
         {
             candyNum = q.Dequeue();
-
-            // 위아래 확인
             int check_num_1;
             int check_num_2;
 
-            if (candyNum == 0 || candyNum == 29) // 일일이 예외 처리 말고 더 효율적으로 수정 필요
+            if (candyNum == 0 || candyNum == 29)
             {
                 check_num_1 = candyNum + 4;
                 check_num_2 = candyNum - 4;
@@ -359,13 +516,13 @@ public class GameManager : MonoBehaviour
                 check_num_2 = candyNum - 7;
             }
 
-            if (Check_Near_Same_Candy(candyNum, check_num_1) == 1)
+            if (CheckNearSameCandy(candyNum, check_num_1) == 1)
             {
                 q.Enqueue(check_num_1);
                 visited_tiles[check_num_1] = 1;
             }
 
-            if (Check_Near_Same_Candy(candyNum, check_num_2) == 1)
+            if (CheckNearSameCandy(candyNum, check_num_2) == 1)
             {
                 q.Enqueue(check_num_2);
                 visited_tiles[check_num_2] = 1;
@@ -375,7 +532,6 @@ public class GameManager : MonoBehaviour
 
     private void CheckLeftDia(int candyNum)
     {
-        // 왼쪽 대각선 확인
         Queue<int> q = new Queue<int>();
         q.Enqueue(candyNum);
         visited_tiles[candyNum] = 1;
@@ -383,12 +539,10 @@ public class GameManager : MonoBehaviour
         while (q.Count > 0)
         {
             candyNum = q.Dequeue();
-
-            // 위아래 확인
             int check_num_1;
             int check_num_2;
 
-            if (candyNum == 0 || candyNum == 29) // 일일이 예외 처리 말고 더 효율적으로 수정 필요
+            if (candyNum == 0 || candyNum == 29)
             {
                 check_num_1 = candyNum + 1;
                 check_num_2 = candyNum - 1;
@@ -419,13 +573,13 @@ public class GameManager : MonoBehaviour
                 check_num_2 = candyNum - 3;
             }
 
-            if (Check_Near_Same_Candy(candyNum, check_num_1) == 1)
+            if (CheckNearSameCandy(candyNum, check_num_1) == 1)
             {
                 q.Enqueue(check_num_1);
                 visited_tiles[check_num_1] = 1;
             }
 
-            if (Check_Near_Same_Candy(candyNum, check_num_2) == 1)
+            if (CheckNearSameCandy(candyNum, check_num_2) == 1)
             {
                 q.Enqueue(check_num_2);
                 visited_tiles[check_num_2] = 1;
@@ -441,26 +595,27 @@ public class GameManager : MonoBehaviour
             if (visited_tiles[i] == 1)
                 check_num += 1;
         }
-        if (check_num >= 3) // 그룹이 있을 경우
+        if (check_num >= 3)
         {
             Check_destory = true;
-            SaveDestoryCandy();
+            SaveDestroyCandy();
         }
     }
 
-    private int Check_Near_Same_Candy(int candy_num, int check_num)
+    private int CheckNearSameCandy(int candy_num, int check_num)
     {
-        if (0 <= check_num && check_num < 30) // 범위가 넘지 않고
+        // Returns 1 only when neighbor is valid, connected, unvisited, and same type.
+        if (0 <= check_num && check_num < 30)
         {
-            if (visited_final_tiles[check_num] == 0) // 캔디가 있을경우
+            if (visited_final_tiles[check_num] == 0)
             {
                 Vector2 pos1 = tiles[candy_num].transform.position;
                 Vector2 pos2 = tiles[check_num].transform.position;
-                if (Vector3.Distance(pos1, pos2) < 1.3f) // 주변 캔디 판별
+                if (Vector3.Distance(pos1, pos2) < 1.3f)
                 {
-                    if (visited_tiles[check_num] == 0) // 들리지 않은 곳
+                    if (visited_tiles[check_num] == 0)
                     {
-                        if (check_tiles[candy_num] == check_tiles[check_num]) // 같은 값을 가질 때
+                        if (check_tiles[candy_num] == check_tiles[check_num])
                         {
                             return 1;
                         }
@@ -473,7 +628,6 @@ public class GameManager : MonoBehaviour
 
     private void CheckRightDia(int candyNum)
     {
-        // 오른쪽 대각선 확인
         Queue<int> q = new Queue<int>();
         q.Enqueue(candyNum);
         visited_tiles[candyNum] = 1;
@@ -481,12 +635,10 @@ public class GameManager : MonoBehaviour
         while (q.Count > 0)
         {
             candyNum = q.Dequeue();
-
-            // 위아래 확인
             int check_num_1;
             int check_num_2;
 
-            if (candyNum == 0) // 일일이 예외 처리 말고 더 효율적으로 수정 필요
+            if (candyNum == 0)
             {
                 check_num_1 = candyNum + 2;
                 check_num_2 = -1;
@@ -522,13 +674,13 @@ public class GameManager : MonoBehaviour
                 check_num_2 = candyNum - 4;
             }
 
-            if (Check_Near_Same_Candy(candyNum, check_num_1) == 1)
+            if (CheckNearSameCandy(candyNum, check_num_1) == 1)
             {
                 q.Enqueue(check_num_1);
                 visited_tiles[check_num_1] = 1;
             }
 
-            if (Check_Near_Same_Candy(candyNum, check_num_2) == 1)
+            if (CheckNearSameCandy(candyNum, check_num_2) == 1)
             {
                 q.Enqueue(check_num_2);
                 visited_tiles[check_num_2] = 1;
@@ -544,7 +696,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void SaveDestoryCandy() // 없앨 캔디 저장
+    private void SaveDestroyCandy()
     {
         for (int i = 0; i < 30; i++)
         {
@@ -555,30 +707,29 @@ public class GameManager : MonoBehaviour
 
     private void CheckFourGroup()
     {
-        // 4개 이상 타일 그룹에 부합할려면 내 주변에 2개 이상 같은 타일 존재 필요
         int check_num = 0;
         for (int i = 0; i < 30; i++)
         {
             if (visited_tiles[i] == 1)
             {
                 int countNearTile = 0;
-                for (int j = 0; j < near_tiles[i].Count; j++) // 주변에서 같은 타일
+                for (int j = 0; j < near_tiles[i].Count; j++)
                 {
                     if (visited_tiles[near_tiles[i][j]] == visited_tiles[i])
                     {
                         countNearTile++;
                     }
                 }
-                if (countNearTile >= 2) // 주변에서 같은 타일이 2개 이상 인접한 경우
-                    check_num += 1; // 4개 그룹 일원 조건으로 부합
+                if (countNearTile >= 2)
+                    check_num += 1;
                 else
                     visited_tiles[i] = 0;
             }
         }
-        if (check_num >= 4) // 그룹이 있을 경우
+        if (check_num >= 4)
         {
             Check_destory = true;
-            SaveDestoryCandy();
+            SaveDestroyCandy();
         }
     }
 
@@ -591,11 +742,11 @@ public class GameManager : MonoBehaviour
         while (q.Count > 0)
         {
             candyNum = q.Dequeue();
-            for (int j = 0; j < near_tiles[candyNum].Count; j++) // 주변에서 같은 타일 찾기
+            for (int j = 0; j < near_tiles[candyNum].Count; j++)
             {
-                if (check_tiles[near_tiles[candyNum][j]] == check_tiles[candyNum]) // 같다면
+                if (check_tiles[near_tiles[candyNum][j]] == check_tiles[candyNum])
                 {
-                    if (Check_Near_Same_Candy(candyNum, near_tiles[candyNum][j]) == 1)
+                    if (CheckNearSameCandy(candyNum, near_tiles[candyNum][j]) == 1)
                     {
                         q.Enqueue(near_tiles[candyNum][j]);
                         visited_tiles[near_tiles[candyNum][j]] = 1;
@@ -610,20 +761,12 @@ public class GameManager : MonoBehaviour
         Check_destory = false;
         if (check_tiles[candyNum] != 't' && check_tiles[candyNum] != '0')
         {
-            // 타일을 확인하는데 BFS 활용
-            // 4개 이상 타일 확인
-            //CheckFindFourGroup(candyNum);
-            //CheckFourGroup();
-            //ResetGroup();
-            // 오른쪽 대각선 확인
             CheckRightDia(candyNum);
             CheckGroup();
             ResetGroup();
-            // 왼쪽 대각선 확인
             CheckLeftDia(candyNum);
             CheckGroup();
             ResetGroup();
-            // 위아래 확인
             CheckUpDown(candyNum);
             CheckGroup();
             ResetGroup();
@@ -632,21 +775,23 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator ChangeCandy(int click_1_candy_num, int click_2_candy_num)
     {
+        // Swap animation and state swap for two adjacent tiles.
         Vector2 pos1 = tiles[click_1_candy_num].transform.position;
         Vector2 pos2 = tiles[click_2_candy_num].transform.position;
-        if (Vector3.Distance(pos1, pos2) < 1) // 주변 캔디인지 판별
+        if (Vector3.Distance(pos1, pos2) < 1)
         {
             while (Vector3.Distance(candy_tiles[click_1_candy_num].transform.position, pos2) > 0.01f)
             {
-                candy_tiles[click_1_candy_num].transform.position = Vector3.MoveTowards(candy_tiles[click_1_candy_num].transform.position, pos2, 0.02f);
-                candy_tiles[click_2_candy_num].transform.position = Vector3.MoveTowards(candy_tiles[click_2_candy_num].transform.position, pos1, 0.02f);
-                yield return new WaitForSeconds(0.001f);
+                float step = Mathf.Max(0.01f, swapMoveSpeed) * Time.deltaTime;
+                candy_tiles[click_1_candy_num].transform.position = Vector3.MoveTowards(candy_tiles[click_1_candy_num].transform.position, pos2, step);
+                candy_tiles[click_2_candy_num].transform.position = Vector3.MoveTowards(candy_tiles[click_2_candy_num].transform.position, pos1, step);
+                yield return null;
             }
 
             char change = check_tiles[click_1_candy_num];
             check_tiles[click_1_candy_num] = check_tiles[click_2_candy_num];
             check_tiles[click_2_candy_num] = change;
-            
+
             GameObject _obj = candy_tiles[click_1_candy_num];
             candy_tiles[click_1_candy_num] = candy_tiles[click_2_candy_num];
             candy_tiles[click_2_candy_num] = _obj;
@@ -655,31 +800,33 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator CheckCandy(int click_1_candy_num, int click_2_candy_num)
     {
+        // Player move pipeline: swap -> validate -> resolve or rollback.
         yield return StartCoroutine(ChangeCandy(click_1_candy_num, click_2_candy_num));
-        
+
         CheckSameCandy(click_1_candy_num);
         CheckSameCandy(click_2_candy_num);
 
         if (Check_destory == true)
         {
-            // 캔디 없애고 없어진 공간 저장
-            // 없어진 공간 채우기 + 확인
+            OnComboSuccess();
             yield return StartCoroutine(FillCandy());
             finish_check = true;
         }
         else
         {
-            // 없을 경우
-            // 다시 위치 원위치
+            ResetCombo();
             yield return StartCoroutine(ChangeCandy(click_2_candy_num, click_1_candy_num));
-            wrong_move_num -= 1;
-            Heart_Obj[wrong_move_num].SetActive(false);
+            wrong_move_num = Mathf.Max(0, wrong_move_num - 1);
+            if (wrong_move_num < Heart_Obj.Length && Heart_Obj[wrong_move_num] != null)
+                Heart_Obj[wrong_move_num].SetActive(false);
             button_bgm.Play();
             finish_check = true;
         }
+
+        isResolvingMove = false;
     }
-    
-    private int FindNearTilesToPos(int num, Vector3 pos) // 두번째 타일을 찾는데 사용
+
+    private int FindNearTilesToPos(int num, Vector3 pos)
     {
         float small_dis = 100;
         int small_tile_num = 0;
@@ -709,8 +856,9 @@ public class GameManager : MonoBehaviour
         return check_num;
     }
 
-    private void FindNearTiles() // 근처 타일 번호 찾아서 저장
+    private void FindNearTiles()
     {
+        // Precompute adjacent slots once for pointer and match logic.
         for (int i = 0; i < 30; i++)
         {
             near_tiles.Add(new List<int>());
@@ -724,58 +872,109 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+    private bool TryGetPointerBegan(out Vector2 screenPos)
+    {
+        screenPos = Vector2.zero;
+
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            screenPos = Input.GetTouch(0).position;
+            return true;
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            screenPos = Input.mousePosition;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryGetPointerEnded(out Vector2 screenPos)
+    {
+        screenPos = Vector2.zero;
+
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        {
+            screenPos = Input.GetTouch(0).position;
+            return true;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            screenPos = Input.mousePosition;
+            return true;
+        }
+
+        return false;
+    }
     void Update()
     {
-        if (Input.touchCount > 0)
+        // Stop all input after game-over.
+        if (isGameOver)
         {
-            if (Input.GetTouch(0).phase == TouchPhase.Began)
+            score_text.text = score_num.ToString();
+            return;
+        }
+
+        Vector2 pointerScreenPos;
+        if (TryGetPointerBegan(out pointerScreenPos))
+        {
+            // First tile selection on touch/mouse down.
+            Vector2 pos = Camera.main.ScreenToWorldPoint(pointerScreenPos);
+            if (finish_check == true)
             {
-                //Debug.Log("Began");
-                Touch touch = Input.GetTouch(0);
-                Vector2 pos = Camera.main.ScreenToWorldPoint(touch.position);
-                if (finish_check == true)
-                {
-                    click_1_candy_num = FindTileNum(pos); // 바꿀 첫번째 캔디 정하기
-                    if (Vector3.Distance(tiles[click_1_candy_num].transform.position, pos) > 0.5f)
-                        click_1_candy_num = -1;
-                }
+                click_1_candy_num = FindTileNum(pos);
+                if (Vector3.Distance(tiles[click_1_candy_num].transform.position, pos) > 0.5f)
+                    click_1_candy_num = -1;
             }
-            if (Input.GetTouch(0).phase == TouchPhase.Ended)
+        }
+
+        if (TryGetPointerEnded(out pointerScreenPos))
+        {
+            // Second tile selection on touch/mouse up.
+            Vector2 pos = Camera.main.ScreenToWorldPoint(pointerScreenPos);
+            if (finish_check == true)
             {
-                //Debug.Log("Ended");
-                Touch touch = Input.GetTouch(0);
-                Vector2 pos = Camera.main.ScreenToWorldPoint(touch.position);
-                if (finish_check == true)
+                if (click_1_candy_num == -1)
+                    return;
+
+                click_2_candy_num = FindNearTilesToPos(click_1_candy_num, pos);
+                if (click_2_candy_num != click_1_candy_num && click_1_candy_num != -1)
                 {
-                    click_2_candy_num = FindNearTilesToPos(click_1_candy_num, pos); // 바꿀 두번째 캔디 정하기
-                                                                                    // 바꿀 캔디들이 선택이 되었다면
-                    if (click_2_candy_num != click_1_candy_num && click_1_candy_num != -1) // 같은 위치 캔디 방지 처리
-                    {
-                        Debug.Log("선택된 캔디 : " + click_1_candy_num + " " + click_2_candy_num);
-                        finish_check = false;
-                        StartCoroutine(CheckCandy(click_1_candy_num, click_2_candy_num));
-                    }
+                    finish_check = false;
+                    isResolvingMove = true;
+                    StartCoroutine(CheckCandy(click_1_candy_num, click_2_candy_num));
                 }
             }
         }
-        if(wrong_move_num == 0)
+        if (wrong_move_num == 0 && !isGameOver)
         {
+            // Enter game-over once when lives are exhausted.
             finish_check = false;
+            isResolvingMove = false;
+            isGameOver = true;
             UI_manager.GetComponent<UI_manager>().score = score_num;
             UI_manager.GetComponent<UI_manager>().OnresultImage();
         }
         score_text.text = score_num.ToString();
-        int check_last = 0;
-        for (int i = 0; i < 30; i++)
+        if (!isResolvingMove)
         {
-            if (visited_final_tiles[i] == 1)
+            // Unlock input only when board has no pending empty slots.
+            int check_last = 0;
+            for (int i = 0; i < 30; i++)
             {
-                check_last = 1;
-                finish_check = false;
+                if (visited_final_tiles[i] == 1)
+                {
+                    check_last = 1;
+                    finish_check = false;
+                }
             }
+            if (check_last == 0)
+                finish_check = true;
         }
-        if (check_last == 0)
-            finish_check = true;
     }
 }
+
+

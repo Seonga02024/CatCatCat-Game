@@ -1,0 +1,1 @@
+C:\Users\robocare\Documents\GitHub\CatCatCat-Game\CatCatCat\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\FramePacing\UnitySwappyWrapper.h
