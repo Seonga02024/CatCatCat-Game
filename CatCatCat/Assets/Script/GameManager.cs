@@ -6,6 +6,14 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    private const int BoardSize = 30;
+    private const int SpawnStartIndex = 29;
+    private const int RandomSpawnCandyTypeCount = 6;
+    private const float NeighborTileDistance = 1.2f;
+    private const float MatchNeighborDistance = 1.3f;
+    private const float SelectionDistanceThreshold = 0.5f;
+    private const int ShuffleRetryLimit = 30;
+
     // Candy prefabs and board slot anchors.
     public GameObject Green_Candy;
     public GameObject Blue_Candy;
@@ -13,11 +21,11 @@ public class GameManager : MonoBehaviour
     public GameObject Red_Candy;
     public GameObject Purple_Candy;
     public GameObject Yellow_Candy;
-    public GameObject[] tiles = new GameObject[30];
+    public GameObject[] tiles = new GameObject[BoardSize];
     public GameObject[] candy_tiles;
-    private char[] check_tiles = new char[30];
-    private int[] visited_tiles = new int[30];
-    private int[] visited_final_tiles = new int[30];
+    private char[] check_tiles = new char[BoardSize];
+    private int[] visited_tiles = new int[BoardSize];
+    private int[] visited_final_tiles = new int[BoardSize];
     public GameObject[] Candy_Obj = new GameObject[7];
     public GameObject[] Heart_Obj = new GameObject[3];
     public AudioSource cat_bgm;
@@ -85,6 +93,151 @@ public class GameManager : MonoBehaviour
             comboBaseColor = combo_text.color;
             combo_text.gameObject.SetActive(false);
         }
+    }
+
+    private bool TryGetPrefabForCode(char candyCode, out GameObject prefab)
+    {
+        prefab = null;
+        switch (candyCode)
+        {
+            case 'b':
+                prefab = Blue_Candy;
+                return true;
+            case 'g':
+                prefab = Green_Candy;
+                return true;
+            case 'o':
+                prefab = Orange_Candy;
+                return true;
+            case 'p':
+                prefab = Purple_Candy;
+                return true;
+            case 'r':
+                prefab = Red_Candy;
+                return true;
+            case 'y':
+                prefab = Yellow_Candy;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void SpawnCandyAt(int tileIndex, GameObject prefab, char candyCode)
+    {
+        Vector3 spawnPos = tiles[tileIndex].transform.position;
+        candy_tiles[tileIndex] = Instantiate(prefab, spawnPos, Quaternion.identity);
+        check_tiles[tileIndex] = candyCode;
+        visited_final_tiles[tileIndex] = 0;
+    }
+
+    private bool TrySpawnCandyAt(int tileIndex, char candyCode)
+    {
+        if (!TryGetPrefabForCode(candyCode, out GameObject prefab))
+            return false;
+
+        SpawnCandyAt(tileIndex, prefab, candyCode);
+        return true;
+    }
+
+    private bool IsOccupiedMatchTile(int index)
+    {
+        return visited_final_tiles[index] == 0 && check_tiles[index] != '0' && check_tiles[index] != 't';
+    }
+
+    private bool SwapCreatesMatch(int firstIndex, int secondIndex)
+    {
+        char firstCode = check_tiles[firstIndex];
+        char secondCode = check_tiles[secondIndex];
+
+        check_tiles[firstIndex] = secondCode;
+        check_tiles[secondIndex] = firstCode;
+
+        int[] visitedBackup = (int[])visited_tiles.Clone();
+        int[] visitedFinalBackup = (int[])visited_final_tiles.Clone();
+        bool destroyFlagBackup = Check_destory;
+
+        CheckSameCandy(firstIndex);
+        bool hasMatch = Check_destory;
+        if (!hasMatch)
+            CheckSameCandy(secondIndex);
+        hasMatch = hasMatch || Check_destory;
+
+        visited_tiles = visitedBackup;
+        visited_final_tiles = visitedFinalBackup;
+        Check_destory = destroyFlagBackup;
+
+        check_tiles[firstIndex] = firstCode;
+        check_tiles[secondIndex] = secondCode;
+        return hasMatch;
+    }
+
+    private bool HasAnyPossibleMove()
+    {
+        for (int i = 0; i < BoardSize; i++)
+        {
+            if (!IsOccupiedMatchTile(i))
+                continue;
+
+            for (int j = 0; j < near_tiles[i].Count; j++)
+            {
+                int neighborIndex = near_tiles[i][j];
+                if (neighborIndex <= i || !IsOccupiedMatchTile(neighborIndex))
+                    continue;
+
+                if (SwapCreatesMatch(i, neighborIndex))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ReshufflePlayableTiles()
+    {
+        List<int> tileIndices = new List<int>();
+        List<char> candyCodes = new List<char>();
+
+        for (int i = 0; i < BoardSize; i++)
+        {
+            if (!IsOccupiedMatchTile(i))
+                continue;
+
+            tileIndices.Add(i);
+            candyCodes.Add(check_tiles[i]);
+        }
+
+        for (int i = candyCodes.Count - 1; i > 0; i--)
+        {
+            int randomIndex = Random.Range(0, i + 1);
+            char temp = candyCodes[i];
+            candyCodes[i] = candyCodes[randomIndex];
+            candyCodes[randomIndex] = temp;
+        }
+
+        for (int i = 0; i < tileIndices.Count; i++)
+        {
+            int tileIndex = tileIndices[i];
+            if (candy_tiles[tileIndex] != null)
+                Destroy(candy_tiles[tileIndex]);
+
+            TrySpawnCandyAt(tileIndex, candyCodes[i]);
+        }
+    }
+
+    private void EnsurePlayableBoardOrShuffle()
+    {
+        if (HasAnyPossibleMove())
+            return;
+
+        for (int attempt = 0; attempt < ShuffleRetryLimit; attempt++)
+        {
+            ReshufflePlayableTiles();
+            if (HasAnyPossibleMove())
+                return;
+        }
+
+        Debug.LogWarning("Board shuffle retry limit reached without finding a playable move.");
     }
 
     private void AddScore(int amount)
@@ -218,51 +371,30 @@ public class GameManager : MonoBehaviour
     private void CreateFirst()
     {
         // Hardcoded initial board layout.
-        candy_tiles = new GameObject[30];
-        string MapSetting = "oyrgpobyrbpopgrggprpygbyogooyb";
+        candy_tiles = new GameObject[BoardSize];
+        string mapSetting = "oyrgpobyrbpopgrggprpygbyogooyb";
+        if (mapSetting.Length != BoardSize)
+        {
+            Debug.LogError($"Invalid map setting length. Expected {BoardSize}, got {mapSetting.Length}.");
+            return;
+        }
 
-        for (int i=0; i<30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             visited_tiles[i] = 0;
             visited_final_tiles[i] = 0;
-            if (MapSetting[i] == 'b')
-            {
-                candy_tiles[i] = Instantiate(Blue_Candy, new Vector3(tiles[i].transform.position.x, tiles[i].transform.position.y), Quaternion.identity) as GameObject;
-                check_tiles[i] = 'b';
-            }
-            if (MapSetting[i] == 'g')
-            {
-                candy_tiles[i] = Instantiate(Green_Candy, new Vector3(tiles[i].transform.position.x, tiles[i].transform.position.y), Quaternion.identity) as GameObject;
-                check_tiles[i] = 'g';
-            }
-            if (MapSetting[i] == 'o')
-            {
-                candy_tiles[i] = Instantiate(Orange_Candy, new Vector3(tiles[i].transform.position.x, tiles[i].transform.position.y), Quaternion.identity) as GameObject;
-                check_tiles[i] = 'o';
-            }
-            if (MapSetting[i] == 'p')
-            {
-                candy_tiles[i] = Instantiate(Purple_Candy, new Vector3(tiles[i].transform.position.x, tiles[i].transform.position.y), Quaternion.identity) as GameObject;
-                check_tiles[i] = 'p';
-            }
-            if (MapSetting[i] == 'r')
-            {
-                candy_tiles[i] = Instantiate(Red_Candy, new Vector3(tiles[i].transform.position.x, tiles[i].transform.position.y), Quaternion.identity) as GameObject;
-                check_tiles[i] = 'r';
-            }
-            if (MapSetting[i] == 'y')
-            {
-                candy_tiles[i] = Instantiate(Yellow_Candy, new Vector3(tiles[i].transform.position.x, tiles[i].transform.position.y), Quaternion.identity) as GameObject;
-                check_tiles[i] = 'y';
-            }
+            check_tiles[i] = '0';
+            TrySpawnCandyAt(i, mapSetting[i]);
         }
+
+        EnsurePlayableBoardOrShuffle();
     }
 
     private int CheckGroupMap()
     {
         // Scan board after cascades. If another match exists, keep resolving.
         int new_candy = 0;
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (visited_final_tiles[i] == 0)
             {
@@ -349,7 +481,7 @@ public class GameManager : MonoBehaviour
     private void FindNearTop()
     {
         ResetGroup();
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (check_tiles[i] == 't')
             {
@@ -372,7 +504,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (visited_tiles[i] == 1)
                 visited_final_tiles[i] = 1;
@@ -383,7 +515,7 @@ public class GameManager : MonoBehaviour
     {
         // Remove all flagged slots, then grant score once per batch.
         int destroyCount = 0;
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (visited_final_tiles[i] == 1)
             {
@@ -410,7 +542,7 @@ public class GameManager : MonoBehaviour
             if (visited_final_tiles[candyNum] == 1)
             {
                 int nextCandyNum = candy_up_next_level(candyNum);
-                while (nextCandyNum < 30)
+                while (nextCandyNum < BoardSize)
                 {
                     if (visited_final_tiles[nextCandyNum] == 0)
                     {
@@ -447,11 +579,9 @@ public class GameManager : MonoBehaviour
 
             for (int i = 0; i < new_candy; i++)
             {
-                int start_candy = 29;
-                int new_candy_num = Random.Range(0, 6);
-                candy_tiles[start_candy] = Instantiate(Candy_Obj[new_candy_num], new Vector3(tiles[start_candy].transform.position.x, tiles[start_candy].transform.position.y), Quaternion.identity) as GameObject;
-                check_tiles[start_candy] = Candy_Obj_name[new_candy_num];
-                visited_final_tiles[start_candy] = 0;
+                int start_candy = SpawnStartIndex;
+                int new_candy_num = Random.Range(0, RandomSpawnCandyTypeCount);
+                SpawnCandyAt(start_candy, Candy_Obj[new_candy_num], Candy_Obj_name[new_candy_num]);
                 new_candies.Add(start_candy);
                 for (int j = 0; j < (i + 1); j++)
                 {
@@ -466,6 +596,8 @@ public class GameManager : MonoBehaviour
 
             new_candy = CheckGroupMap();
         }
+
+        EnsurePlayableBoardOrShuffle();
     }
 
     private void CheckUpDown(int candyNum)
@@ -590,7 +722,7 @@ public class GameManager : MonoBehaviour
     private void CheckGroup()
     {
         int check_num = 0;
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (visited_tiles[i] == 1)
                 check_num += 1;
@@ -605,13 +737,13 @@ public class GameManager : MonoBehaviour
     private int CheckNearSameCandy(int candy_num, int check_num)
     {
         // Returns 1 only when neighbor is valid, connected, unvisited, and same type.
-        if (0 <= check_num && check_num < 30)
+        if (0 <= check_num && check_num < BoardSize)
         {
             if (visited_final_tiles[check_num] == 0)
             {
                 Vector2 pos1 = tiles[candy_num].transform.position;
                 Vector2 pos2 = tiles[check_num].transform.position;
-                if (Vector3.Distance(pos1, pos2) < 1.3f)
+                if (Vector3.Distance(pos1, pos2) < MatchNeighborDistance)
                 {
                     if (visited_tiles[check_num] == 0)
                     {
@@ -690,7 +822,7 @@ public class GameManager : MonoBehaviour
 
     private void ResetGroup()
     {
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             visited_tiles[i] = 0;
         }
@@ -698,7 +830,7 @@ public class GameManager : MonoBehaviour
 
     private void SaveDestroyCandy()
     {
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (visited_tiles[i] == 1)
                 visited_final_tiles[i] = 1;
@@ -708,7 +840,7 @@ public class GameManager : MonoBehaviour
     private void CheckFourGroup()
     {
         int check_num = 0;
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (visited_tiles[i] == 1)
             {
@@ -845,7 +977,7 @@ public class GameManager : MonoBehaviour
     {
         int check_num = 0;
         float check_distance = 1000;
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (check_distance > Vector3.Distance(vector, tiles[i].transform.position))
             {
@@ -859,12 +991,12 @@ public class GameManager : MonoBehaviour
     private void FindNearTiles()
     {
         // Precompute adjacent slots once for pointer and match logic.
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             near_tiles.Add(new List<int>());
-            for (int j = 0; j < 30; j++)
+            for (int j = 0; j < BoardSize; j++)
             {
-                if (i != j && Vector3.Distance(tiles[i].transform.position, tiles[j].transform.position) < 1.2f)
+                if (i != j && Vector3.Distance(tiles[i].transform.position, tiles[j].transform.position) < NeighborTileDistance)
                 {
                     near_tiles[i].Add(j);
                 }
@@ -926,7 +1058,7 @@ public class GameManager : MonoBehaviour
             if (finish_check == true)
             {
                 click_1_candy_num = FindTileNum(pos);
-                if (Vector3.Distance(tiles[click_1_candy_num].transform.position, pos) > 0.5f)
+                if (Vector3.Distance(tiles[click_1_candy_num].transform.position, pos) > SelectionDistanceThreshold)
                     click_1_candy_num = -1;
             }
         }
@@ -963,7 +1095,7 @@ public class GameManager : MonoBehaviour
         {
             // Unlock input only when board has no pending empty slots.
             int check_last = 0;
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < BoardSize; i++)
             {
                 if (visited_final_tiles[i] == 1)
                 {
@@ -976,5 +1108,6 @@ public class GameManager : MonoBehaviour
         }
     }
 }
+
 
 

@@ -8,11 +8,9 @@ public class CameraResolution : MonoBehaviour
     {
         Camera cam = GetComponent<Camera>();
 
-        // Ä«¸Þ¶ó ÄÄÆ÷³ÍÆ®ÀÇ Viewport Rect
         Rect rt = cam.rect;
 
-        // ÇöÀç ¼¼·Î ¸ðµå 9:16, ¹Ý´ë·Î ÇÏ°í ½ÍÀ¸¸é 16:9¸¦ ÀÔ·Â.
-        float scale_height = ((float)Screen.width / Screen.height) / ((float)9 / 16); // (°¡·Î / ¼¼·Î)
+        float scale_height = ((float)Screen.width / Screen.height) / ((float)9 / 16); // (ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½)
         float scale_width = 1f / scale_height;
 
         if (scale_height < 1)

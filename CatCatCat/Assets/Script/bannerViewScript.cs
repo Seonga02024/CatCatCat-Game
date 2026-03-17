@@ -10,10 +10,10 @@ public class bannerViewScript : MonoBehaviour
     private BannerView bannerView;
 
 
-    public void Start() //±¤°í ÃÊ±âÈ­
+    public void Start() 
     {
 #if UNITY_ANDROID
-        adUnitId = "key"; // 보완상 삭제
+        adUnitId = "key"; 
 #elif UNITY_IOS
         adUnitId = "key";
 #else

@@ -45,23 +45,23 @@ public class UI_manager : MonoBehaviour
         resultnum.text = score.ToString();
         if(score > 30000)
         {
-            resultment.text = "»óÀ§ 10%";
+            resultment.text = "ìƒìœ„ 10%";
         }
         else if(score > 21000)
         {
-            resultment.text = "»óÀ§ 30%";
+            resultment.text = "ìƒìœ„ 30%";
         }
         else if (score > 15000)
         {
-            resultment.text = "»óÀ§ 50%";
+            resultment.text = "ìƒìœ„ 50%";
         }
         else if (score > 9000)
         {
-            resultment.text = "»óÀ§ 70%";
+            resultment.text = "ìƒìœ„ 70%";
         }
         else
         {
-            resultment.text = "»óÀ§ 100%";
+            resultment.text = "ìƒìœ„ 100%";
         }
         result.SetActive(true);
     }
